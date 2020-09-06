@@ -8,7 +8,8 @@ app.set('view engine', 'hbs');
 app.engine('hbs', hbs({ extname: 'hbs', layoutsDir: './layouts', defaultLayout: 'main' }));
 
 app.use(express.static(path.join(__dirname, '/public')));
-
+app.use(express.urlencoded({ extended: false }));
+//app.use(express.json()); najczesciej bedzie tez potrzebny
 
 
 app.get('/', (req, res) => {
@@ -27,6 +28,19 @@ app.get('/contact', (req, res) => {
   res.render('contact');
 });
 
+app.post('/contact/send-message', (req, res) => {
+
+  const { author, sender, title, message, image } = req.body;
+
+  if(author && sender && title && message && image) {
+    res.render('contact', {isSent: true});
+  }
+  else {
+    res.render('contact', {isError: true})
+  }
+
+});
+
 app.get('/info', (req, res) => {
   res.render('info');
 });
@@ -34,6 +48,7 @@ app.get('/info', (req, res) => {
 app.get('/history', (req, res) => {
   res.render('history');
 });
+
 
 app.use((req, res) => {
   res.status(404).send('404 not found...');
