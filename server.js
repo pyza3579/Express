@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const hbs = require('express-handlebars');
+const fileUpload = require('express-fileupload')
 
 const app = express();
 app.engine('hbs', hbs());
@@ -10,7 +11,7 @@ app.engine('hbs', hbs({ extname: 'hbs', layoutsDir: './layouts', defaultLayout: 
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.urlencoded({ extended: false }));
 //app.use(express.json()); najczesciej bedzie tez potrzebny
-
+app.use(fileUpload());
 
 app.get('/', (req, res) => {
   res.render('index');
@@ -30,10 +31,11 @@ app.get('/contact', (req, res) => {
 
 app.post('/contact/send-message', (req, res) => {
 
-  const { author, sender, title, message, image } = req.body;
+  const { author, sender, title, message} = req.body;
+  const { files } = req;
 
-  if(author && sender && title && message && image) {
-    res.render('contact', {isSent: true});
+  if(author && sender && title && message && files) {
+    res.render('contact', {isSent: true, file: files.file.name });
   }
   else {
     res.render('contact', {isError: true})
